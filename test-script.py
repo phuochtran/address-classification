@@ -72,8 +72,8 @@ def print_report(results, all_passed, avg_time, max_time):
         print("-" * 80)
 
     print(f"Overall Result: {'SUCCESSFUL' if all_passed else 'FAILURE'}")
-    print(f"Average execution time across {len(results)} test cases: {avg_time:.6f} s")
-    print(f"Maximum execution time across {len(results)} test cases: {max_time:.6f} s")
+    print(f"Average execution time: {avg_time:.6f} s")
+    print(f"Maximum execution time: {max_time:.6f} s")
     print("=" * 80)
 
 if __name__ == "__main__":
