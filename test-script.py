@@ -1,0 +1,81 @@
+import time
+from ocr import classify_address
+from ocr import build_index
+
+# Test data
+PROVINCES = ["Long An", "Ha Noi", "Ho Chi Minh", "Bac Ninh"]
+DISTRICTS = ["Cần Giuộc", "Thuận Thành (huyện)", "Quan 1", "Long An District"]
+COMMUNES = ["Thuận Thành", "An Phu", "Can Giuoc Town"]
+
+bk_province, map_province = build_index(PROVINCES)
+bk_district, map_district = build_index(DISTRICTS)
+bk_commune, map_commune = build_index(COMMUNES)
+
+examples = [
+    "X. Thuận Thành, H. Cần Giuộc, T. Long An",
+    "Thuận Thanh, HCần Giuộc, Tlong An",
+    "Thuận Thành, H Cần Giuộc T. Long An",
+    "X ThuanThanh H. Can Giuoc, Long An",
+    "ThuanThanh H Can Giuoc Long An",
+    "X ThuanThanh LongAn",
+    "ThuanThanh H Long An Long An",
+]
+
+# Danh sách test cases: (input, expected)
+TEST_CASES = [
+    ("X ThuanThanh H. Can Giuoc, Long An", ["Thuận Thành", "Cần Giuộc", "Long An"]),
+    ("an phu, quAn 1, ho chiMInh", ["An Phu", "Quan 1", "Ho Chi Minh"]),
+]
+
+def run_tests(test_cases):
+    results = []
+    times = []
+
+    for idx, (input, expected) in enumerate(test_cases, start=1):
+        start = time.perf_counter()
+        output = classify_address(input, bk_commune, map_commune, bk_district, map_district, bk_province, map_province)
+        end = time.perf_counter()
+
+        elapsed = end - start
+        times.append(elapsed)
+
+        actual = []
+        [actual.append(output[lvl]["orig"]) for lvl in ("commune", "district", "province")]
+        equal = lambda str1, str2: str1 == str2
+        results.append({
+            "id": idx,
+            "input": input,
+            "expected": expected,
+            "actual": actual,
+            "pass": equal(actual, expected),
+            "time": elapsed
+        })
+
+    all_passed = all(r["pass"] for r in results)
+    avg_time = sum(times) / len(times) if times else 0
+    max_time = max(times) if times else 0
+
+    return results, all_passed, avg_time, max_time
+
+def print_report(results, all_passed, avg_time, max_time):
+    print("=" * 80)
+    print("TEST REPORT")
+    print("=" * 80)
+
+    for r in results:
+        status = "PASS ✅" if r["pass"] else "FAIL ❌"
+        print(f"Test {r['id']}: {status}")
+        print(f"  Input   : {r['input']}")
+        print(f"  Expected: {r['expected']}")
+        print(f"  Actual  : {r['actual']}")
+        print(f"  Time    : {r['time']:.6f} s")
+        print("-" * 80)
+
+    print(f"Overall Result: {'SUCCESSFUL' if all_passed else 'FAILURE'}")
+    print(f"Average execution time across {len(results)} test cases: {avg_time:.6f} s")
+    print(f"Maximum execution time across {len(results)} test cases: {max_time:.6f} s")
+    print("=" * 80)
+
+if __name__ == "__main__":
+    results, all_passed, avg_time, max_time = run_tests(TEST_CASES)
+    print_report(results, all_passed, avg_time, max_time)
