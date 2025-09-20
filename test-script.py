@@ -25,6 +25,7 @@ examples = [
 TEST_CASES = [
     ("X ThuanThanh H. Can Giuoc, Long An", ["Thuận Thành", "Cần Giuộc", "Long An"]),
     ("an phu, quAn 1, ho chiMInh", ["An Phu", "Quan 1", "Ho Chi Minh"]),
+    ("huan Thanh  longAn", ["Thuận Thành", "", "Long An"]),
 ]
 
 def run_tests(test_cases):
@@ -40,7 +41,7 @@ def run_tests(test_cases):
         times.append(elapsed)
 
         actual = []
-        [actual.append(output[lvl]["orig"]) for lvl in ("commune", "district", "province")]
+        [actual.append(output[lvl]["orig"] if output[lvl] else "") for lvl in ("commune", "district", "province")]
         equal = lambda str1, str2: str1 == str2
         results.append({
             "id": idx,
