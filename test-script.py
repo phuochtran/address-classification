@@ -11,21 +11,12 @@ bk_province, map_province = build_index(PROVINCES)
 bk_district, map_district = build_index(DISTRICTS)
 bk_commune, map_commune = build_index(COMMUNES)
 
-examples = [
-    "X. Thuận Thành, H. Cần Giuộc, T. Long An",
-    "Thuận Thanh, HCần Giuộc, Tlong An",
-    "Thuận Thành, H Cần Giuộc T. Long An",
-    "X ThuanThanh H. Can Giuoc, Long An",
-    "ThuanThanh H Can Giuoc Long An",
-    "X ThuanThanh LongAn",
-    "ThuanThanh H Long An Long An",
-]
-
 # Danh sách test cases: (input, expected)
 TEST_CASES = [
     ("X ThuanThanh H. Can Giuoc, Long An", ["Thuận Thành", "Cần Giuộc", "Long An"]),
     ("an phu, quAn 1, ho chiMInh", ["An Phu", "Quan 1", "Ho Chi Minh"]),
     ("huan Thanh  longAn", ["Thuận Thành", "", "Long An"]),
+    ("ThuanThanh H Long An Long An", ["Thuận Thành", "Long An District", "Long An"]),
 ]
 
 def run_tests(test_cases):
