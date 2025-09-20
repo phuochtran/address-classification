@@ -1,23 +1,42 @@
 import time
 from ocr import classify_address
 from ocr import build_index
+from test_generator import generate_test_cases
+
+def read_file(path_txt: str):
+    names = []
+    with open(path_txt, "r", encoding="utf-8") as f:
+        for line in f:
+            name = line.strip()
+            if name:  # bỏ dòng trống
+                names.append(name)
+    return names
 
 # Test data
-PROVINCES = ["Long An", "Ha Noi", "Ho Chi Minh", "Bac Ninh"]
-DISTRICTS = ["Cần Giuộc", "Thuận Thành (huyện)", "Quan 1", "Long An District"]
-COMMUNES = ["Thuận Thành", "An Phu", "Can Giuoc Town"]
+'''
+PROVINCES = ["Long An", "Hà Nội", "Hồ Chí Minh", "Bắc Ninh"]
+DISTRICTS = ["Cần Giuộc", "Thuận Thành", "Quận 1", "Long An"]
+COMMUNES = ["Tiến Thắng", "Thuận Thành", "An Phú", "Cần Giuộc"]
+'''
+
+PROVINCES = read_file("tinh.txt")
+DISTRICTS = read_file("huyen.txt")
+COMMUNES = read_file("xa.txt")
 
 bk_province, map_province = build_index(PROVINCES)
 bk_district, map_district = build_index(DISTRICTS)
 bk_commune, map_commune = build_index(COMMUNES)
 
 # Danh sách test cases: (input, expected)
+'''
 TEST_CASES = [
     ("X ThuanThanh H. Can Giuoc, Long An", ["Thuận Thành", "Cần Giuộc", "Long An"]),
     ("an phu, quAn 1, ho chiMInh", ["An Phu", "Quan 1", "Ho Chi Minh"]),
     ("huan Thanh  longAn", ["Thuận Thành", "", "Long An"]),
     ("ThuanThanh H Long An Long An", ["Thuận Thành", "Long An District", "Long An"]),
 ]
+'''
+TEST_CASES = generate_test_cases("dvhcvn.json", n = 100)
 
 def run_tests(test_cases):
     results = []
