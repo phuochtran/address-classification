@@ -39,17 +39,14 @@ def export_names(data,
                 if xa:
                     set_xa.add(xa)
 
-    # Viết file tỉnh
     with open(file_tinh, 'w', encoding='utf-8') as f:
         for name in sorted(set_tinh):
             f.write(clean_name(name) + "\n")
 
-    # Viết file huyện
     with open(file_huyen, 'w', encoding='utf-8') as f:
         for name in sorted(set_huyen):
             f.write(clean_name(name) + "\n")
 
-    # Viết file xã
     with open(file_xa, 'w', encoding='utf-8') as f:
         for name in sorted(set_xa):
             f.write(clean_name(name) + "\n")
@@ -57,5 +54,4 @@ def export_names(data,
 if __name__ == "__main__":
     PATH_JSON = "dvhcvn.json"
     data = load_data(PATH_JSON)
-    export_names(data, file_tinh="tinh.txt", file_huyen="huyen.txt", file_xa="xa.txt")
-    print("Đã xuất 3 file: tinh.txt, huyen.txt, xa.txt")
+    export_names(data, file_tinh="data_set/tinh.txt", file_huyen="data_set/huyen.txt", file_xa="data_set/xa.txt")

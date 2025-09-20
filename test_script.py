@@ -8,20 +8,14 @@ def read_file(path_txt: str):
     with open(path_txt, "r", encoding="utf-8") as f:
         for line in f:
             name = line.strip()
-            if name:  # bỏ dòng trống
+            if name:
                 names.append(name)
     return names
 
 # Test data
-'''
-PROVINCES = ["Long An", "Hà Nội", "Hồ Chí Minh", "Bắc Ninh"]
-DISTRICTS = ["Cần Giuộc", "Thuận Thành", "Quận 1", "Long An"]
-COMMUNES = ["Tiến Thắng", "Thuận Thành", "An Phú", "Cần Giuộc"]
-'''
-
-PROVINCES = read_file("tinh.txt")
-DISTRICTS = read_file("huyen.txt")
-COMMUNES = read_file("xa.txt")
+PROVINCES = read_file("data_set/tinh.txt")
+DISTRICTS = read_file("data_set/huyen.txt")
+COMMUNES = read_file("data_set/xa.txt")
 
 bk_province, map_province = build_index(PROVINCES)
 bk_district, map_district = build_index(DISTRICTS)
