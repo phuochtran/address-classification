@@ -67,7 +67,9 @@ def print_report(results, all_passed, avg_time, max_time):
     print("TEST REPORT")
     print("=" * 80)
 
+    pass_results = 0
     for r in results:
+        pass_results += int(r["pass"])
         status = "PASSED ✅" if r["pass"] else "FAILED ❌"
         print(f"Test {r['id']}: {status}")
         print(f"  Input   : {r['input']}")
@@ -76,9 +78,9 @@ def print_report(results, all_passed, avg_time, max_time):
         print(f"  Time    : {r['time']:.6f} s")
         print("-" * 80)
 
-    print(f"Overall Result: {'SUCCESSFUL' if all_passed else 'FAILURE'}")
-    print(f"Average execution time: {avg_time:.6f}s")
-    print(f"Maximum execution time: {max_time:.6f}s")
+    print(f"Overall Accuracy: {pass_results/len(results)*100:.2f}%")
+    print(f"Average Execution Time: {avg_time:.6f}s")
+    print(f"Maximum Execution Time: {max_time:.6f}s")
     print("=" * 80)
 
 if __name__ == "__main__":
