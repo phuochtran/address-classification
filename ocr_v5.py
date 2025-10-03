@@ -162,9 +162,7 @@ class Solution:
             num = self._lcs(pfx, candidate)
             score = num/max(len(pfx), len(candidate))
             matches.append((pfx, lvl, num, score))
-        print(f"prefix matching - {substr}: {matches}")
         prefix, level, num, _ = max(matches, key=lambda x: (x[3], x[2]))
-        print(f"prefix matched: {prefix}")
         return prefix, level, num
 
     def process(self, input: str) -> dict:
