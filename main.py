@@ -4,7 +4,7 @@ from generator import generate_test_cases
 #from generator_v1 import load_test_cases
 
 # Danh sách test cases: (input, expected)
-TEST_CASES = generate_test_cases("dvhcvn.json", n = 1)
+TEST_CASES = generate_test_cases("dvhcvn.json", n = 100)
 #TEST_CASES = load_test_cases("test.json")
 
 def run_tests(test_cases):

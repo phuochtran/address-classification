@@ -167,7 +167,6 @@ class Solution:
 
     def process(self, input: str) -> dict:
         norm_text = self._normalize(input)
-        print(f"norm: {norm_text}\n")
         tokens = norm_text.split()
         n = len(tokens)
 
