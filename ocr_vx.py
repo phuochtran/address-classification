@@ -1,9 +1,8 @@
 import re
-import unicodedata
-from unidecode import unidecode
+from rapidfuzz.distance import Levenshtein
 import time
 
-debug = True
+debug = False
 
 class Solution:
     def __init__(self):
@@ -74,7 +73,6 @@ class Solution:
 
     def _normalize(self, s: str) -> str:
         s = s.lower()
-        #s = unidecode(s)
         s = re.sub(r'[\W_]+', ' ', s)
         return s.strip()
 
@@ -150,7 +148,8 @@ class Solution:
             # if duplicate normalized keys, keep the first (or could store list)
             if n not in norm_to_orig:
                 norm_to_orig[n] = name
-        bk = self.BKTree(Solution._levenshtein)
+        #bk = self.BKTree(Solution._levenshtein)
+        bk = self.BKTree(Levenshtein.distance)
         for n in norm_to_orig:
             bk.add(n)
         return bk, norm_to_orig
@@ -324,7 +323,7 @@ class Solution:
                     if debug: print(f"\ncandidate: ({j}, {i+1}) {substr}")
                     if (self._worker(substr)): break
         end = time.perf_counter()
-        print(f"\nOverall Exec Time: {end-start:.4f}s")
+        if debug: print(f"\nOverall Exec Time: {end-start:.4f}s")
         return [self.output[level]["orig"] for level in ["ward", "district", "province"]]
 
 if __name__ == "__main__":

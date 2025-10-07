@@ -1,12 +1,10 @@
 import time
 from ocr_vx import Solution
-#from claude import Solution
-from generator import generate_test_cases
-#from generator_v1 import load_test_cases
+#from generator import generate_test_cases
+from generator_v1 import load_test_cases
 
-# Danh sách test cases: (input, expected)
-TEST_CASES = generate_test_cases("dvhcvn.json", n = 100)
-#TEST_CASES = load_test_cases("test.json")
+#TEST_CASES = generate_test_cases("dvhcvn.json", n = 1000)
+TEST_CASES = load_test_cases("test.json")
 
 class Color:
     GREEN = '\033[32m'
