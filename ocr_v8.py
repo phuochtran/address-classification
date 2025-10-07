@@ -1,9 +1,7 @@
 import re
 import json
 from rapidfuzz.distance import Levenshtein
-import time
 
-debug = False
 class Solution:
     def __init__(self):
         self.province_path = 'list_province.txt'
@@ -118,7 +116,6 @@ class Solution:
             score = num/max(len(pfx), len(candidate))
             matches.append((pfx, lvl, num, score))
         prefix, level, num, _ = max(matches, key=lambda x: (x[3], x[2]))
-        if debug: print(f'prefix matched: {prefix}')
         return prefix, level, num
 
     def _classify(self, substr: str) -> bool:
@@ -129,53 +126,36 @@ class Solution:
             case 'province':
                 sub = substr[num:].strip()
                 if not sub: return False
-                if debug: print(f'sub: {sub}')
-                start = time.perf_counter()
                 results = self.province_bktree.search(sub, maxdist) if self.province_bktree is not None else []
-                end = time.perf_counter()
-                if debug: print(f'[{end-start:.4f}s] detected level: {level} - r: {results}')
                 if results:
                     norm, num, score = max(results, key=lambda x: (x[2], x[1]))
-                    if debug: print(f'best matched - norm: {norm}, num: {num}, score: {score}')
                     if score+bias > self.output['province']['score'] or (score+bias == self.output['province']['score'] and num > self.output['province']['num']):
                         orig = self.province_map.get(norm, '')
                         self.output['province'] = {'orig':orig,'norm':norm,'num':num,'score':score+bias}
                         if self.output['district']['orig'] and self.output['district']['norm'] not in self.ref[self.output['province']['norm']]:
                             self.output['district'] = {'orig':'','norm':'','num':0,'score':0}
-                        if debug: print(f'output: {self.output}\n')
                         return True
             case 'district':
                 sub = substr[num:].strip()
                 if not sub: return False
-                if debug: print(f'sub: {sub}')
-                start = time.perf_counter()
                 results = self.district_bktree.search(sub, maxdist) if self.district_bktree is not None else []
-                end = time.perf_counter()
-                if debug: print(f'[{end-start:.4f}s] detected level: {level} - r: {results}')
                 if results:
                     for res in sorted(results, key=lambda x: (x[2], x[1]), reverse=True):
                         norm, num, score = res
-                        if debug: print(f'best matched - norm: {norm}, num: {num}, score: {score}')
                         if self.output['province']['orig'] and norm not in self.ref[self.output['province']['norm']]: continue
                         if score+bias > self.output['district']['score'] or (score+bias == self.output['district']['score'] and num > self.output['district']['num']):
                             orig = self.district_map.get(norm, '')
                             self.output['district'] = {'orig':orig,'norm':norm,'num':num,'score':score+bias}
                             if self.output['ward']['orig'] and all(self.output['ward']['norm'] not in ws for ws in [province[self.output['district']['norm']] for province in self.ref.values() if self.output['district']['norm'] in province]):
                                 self.output['ward'] = {'orig':'','norm':'','num':0,'score':0}
-                            if debug: print(f'output: {self.output}\n')
                             return True
             case 'ward':
                 sub = substr[num:].strip()
                 if not sub: return False
-                if debug: print(f'sub: {sub}')
-                start = time.perf_counter()
                 results = self.ward_bktree.search(sub, maxdist) if self.ward_bktree is not None else []
-                end = time.perf_counter()
-                if debug: print(f'[{end-start:.4f}s] detected level: {level} - r: {results}')
                 if results:
                     for res in sorted(results, key=lambda x: (x[2], x[1]), reverse=True):
                         norm, num, score = res
-                        if debug: print(f'best matched - norm: {norm}, num: {num}, score: {score}')
                         if self.output['province']['orig']:
                             if self.output['district']['orig']:
                                 if norm not in self.ref[self.output['province']['norm']][self.output['district']['norm']]:
@@ -190,50 +170,35 @@ class Solution:
                         if score+bias > self.output['ward']['score'] or (score+bias == self.output['ward']['score'] and num > self.output['ward']['num']):
                             orig = self.ward_map.get(norm, '')
                             self.output['ward'] = {'orig':orig,'norm':norm,'num':num,'score':score+bias}
-                            if debug: print(f'output: {self.output}\n')
                             return True
         bias = 0
         # province
-        start = time.perf_counter()
         results = self.province_bktree.search(substr, maxdist) if self.province_bktree is not None else []
-        end = time.perf_counter()
-        if debug: print(f'[{end-start:.4f}s] linear-scanned level: province - r: {results}')
         if results:
             norm, num, score = max(results, key=lambda x: (x[2], x[1]))
-            if debug: print(f'best matched - norm: {norm}, num: {num}, score: {score}')
             if score+bias > self.output['province']['score'] or (score+bias == self.output['province']['score'] and num > self.output['province']['num']):
                 orig = self.province_map.get(norm, '')
                 self.output['province'] = {'orig':orig,'norm':norm,'num':num,'score':score+bias}
                 if self.output['district']['orig'] and self.output['district']['norm'] not in self.ref[self.output['province']['norm']]:
                     self.output['district'] = {'orig':'','norm':'','num':0,'score':0}
-                if debug: print(f'output: {self.output}\n')
                 return True
         # district
-        start = time.perf_counter()
         results = self.district_bktree.search(substr, maxdist) if self.district_bktree is not None else []
-        end = time.perf_counter()
-        if debug: print(f'[{end-start:.4f}s] linear-scanned level: district - r: {results}')
         if results:
             for res in sorted(results, key=lambda x: (x[2], x[1]), reverse=True):
                 norm, num, score = res
-                if debug: print(f'best matched - norm: {norm}, num: {num}, score: {score}')
                 if self.output['province']['orig'] and norm not in self.ref[self.output['province']['norm']]: continue
                 if score+bias > self.output['district']['score'] or (score+bias == self.output['district']['score'] and num > self.output['district']['num']):
                     orig = self.district_map.get(norm, '')
                     self.output['district'] = {'orig':orig,'norm':norm,'num':num,'score':score+bias}
                     if self.output['ward']['orig'] and all(self.output['ward']['norm'] not in ws for ws in [province[self.output['district']['norm']] for province in self.ref.values() if self.output['district']['norm'] in province]):
                         self.output['ward'] = {'orig':'','norm':'','num':0,'score':0}
-                    if debug: print(f'output: {self.output}\n')
                     return True
         # ward
-        start = time.perf_counter()
         results = self.ward_bktree.search(substr, maxdist) if self.ward_bktree is not None else []
-        end = time.perf_counter()
-        if debug: print(f'[{end-start:.4f}s] linear-scanned level: ward - r: {results}')
         if results:
             for res in sorted(results, key=lambda x: (x[2], x[1]), reverse=True):
                 norm, num, score = res
-                if debug: print(f'best matched - norm: {norm}, num: {num}, score: {score}')
                 if self.output['province']['orig']:
                     if self.output['district']['orig']:
                         if norm not in self.ref[self.output['province']['norm']][self.output['district']['norm']]:
@@ -248,12 +213,10 @@ class Solution:
                 if score+bias > self.output['ward']['score'] or (score+bias == self.output['ward']['score'] and num > self.output['ward']['num']):
                     orig = self.ward_map.get(norm, '')
                     self.output['ward'] = {'orig':orig,'norm':norm,'num':num,'score':score+bias}
-                    if debug: print(f'output: {self.output}\n')
                     return True
         return False
 
     def process(self, input: str) -> dict:
-        start = time.perf_counter()
         self.output = {
             'province':{'orig':'','norm':'','num':0,'score':0},
             'district':{'orig':'','norm':'','num':0,'score':0},
@@ -262,16 +225,12 @@ class Solution:
         parts = [part for part in reversed(input.split(','))]
         for part in parts:
             norm_text = self._normalize(part)
-            if debug: print(f'\nnorm: {norm_text}')
             tokens = norm_text.split()
             max_window = 4
             for i in reversed(range(len(tokens))):
                 for j in range(max(0, i-max_window+1), i+1):
                     substr = ' '.join(tokens[j:i+1])
-                    if debug: print(f'\ncandidate: ({j}, {i+1}) {substr}')
                     if (self._classify(substr)): break
-        end = time.perf_counter()
-        if debug: print(f'\nOverall Exec Time: {end-start:.4f}s')
         return [self.output[level]['orig'] for level in ['ward', 'district', 'province']]
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
 import time
-from ocr_vx import Solution
+from ocr_v8 import Solution
 #from generator import generate_test_cases
 from generator_v1 import load_test_cases
 
