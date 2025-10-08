@@ -50,11 +50,11 @@
 
 4. Ward Detection
 
-Trie search restricted by (province, district) pair.
+- Trie search restricted by (province, district) pair.
 
-Prefers wards appearing before the detected district (as in Vietnamese order).
+- Prefers wards appearing before the detected district (as in Vietnamese order).
 
-Anchor check: If “phường N” found but N not valid in that district → leave ward empty.
+- Anchor check: If “phường N” found but N not valid in that district → leave ward empty.
 
 5. Hierarchical Fallback
 
